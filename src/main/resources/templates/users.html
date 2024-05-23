@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Users</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>User List</h1>
+    <form th:action="@{/users}" method="get">
+        <label for="userId">Enter User ID:</label>
+        <input type="text" id="userId" name="userId" />
+        <button type="submit">Find User</button>
+    </form>
+    <button id="viewAllUsersBtn" onclick="toggleUsers()">View All Users</button>
+    <button id="hideUsersBtn" style="display: none;" onclick="toggleUsers()">Hide All Users</button>
+    <button id="addUserBtn" onclick="showAddUserForm()">Add User</button>
+    <button id="deleteUserBtn" onclick="showDeleteUserForm()">Delete User</button>
+    <button id="editUserBtn" onclick="showEditUserForm()">Edit User</button>
+
+    <div id="userDetails" th:if="${user}">
+        <h2>User Details</h2>
+        <p>Name: <span th:text="${user.name}"></span></p>
+        <p>Email: <span th:text="${user.email}"></span></p>
+        <p>Role: <span th:text="${user.role}"></span></p>
+    </div>
+
+    <div id="errorMessage" th:if="${errorMessage}">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <table id="userTable" style="display: none;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}">1</td>
+                <td th:text="${user.name}">Name</td>
+                <td th:text="${user.email}">Email</td>
+                <td th:text="${user.role}">Role</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Add User Form -->
+    <div id="addUserForm" style="display: none;">
+        <h2>Add New User</h2>
+        <form th:action="@{/addUser}" method="post">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required /><br />
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required /><br />
+            <label for="role">Role:</label>
+            <input type="text" id="role" name="role" required /><br />
+            <button type="submit">Add User</button>
+        </form>
+    </div>
+
+    <!-- Delete User Form -->
+    <div id="deleteUserForm" style="display: none;">
+        <h2>Delete User</h2>
+        <form th:action="@{/deleteUser}" method="post">
+            <label for="deleteUserId">Enter User ID to delete:</label>
+            <input type="text" id="deleteUserId" name="userId" required />
+            <button type="submit">Delete User</button>
+        </form>
+    </div>
+
+    <!-- Edit User Form -->
+    <div id="editUserForm" style="display: none;">
+        <h2>Edit User</h2>
+        <form id="fetchUserForm" th:action="@{/getUser}" method="get">
+            <label for="editUserId">Enter User ID to edit:</label>
+            <input type="text" id="editUserId" name="userId" required />
+            <button type="submit">Fetch User</button>
+        </form>
+        <form id="editUserDetailsForm" th:action="@{/editUser}" method="post" style="display: none;">
+            <input type="hidden" id="editUserIdHidden" name="id" />
+            <label for="editName">Name:</label>
+            <input type="text" id="editName" name="name" required /><br />
+            <label for="editEmail">Email:</label>
+            <input type="email" id="editEmail" name="email" required /><br />
+            <label for="editRole">Role:</label>
+            <input type="text" id="editRole" name="role" required /><br />
+            <button type="submit">Save Changes</button>
+        </form>
+    </div>
+
+    <script>
+        function toggleUsers() {
+            var userTable = document.getElementById("userTable");
+            var viewAllUsersBtn = document.getElementById("viewAllUsersBtn");
+            var hideUsersBtn = document.getElementById("hideUsersBtn");
+            if (userTable.style.display === "none") {
+                userTable.style.display = "table";
+                viewAllUsersBtn.style.display = "none";
+                hideUsersBtn.style.display = "inline";
+            } else {
+                userTable.style.display = "none";
+                viewAllUsersBtn.style.display = "inline";
+                hideUsersBtn.style.display = "none";
+            }
+        }
+
+        function showAddUserForm() {
+            document.getElementById("addUserForm").style.display = "block";
+            document.getElementById("deleteUserForm").style.display = "none";
+            document.getElementById("editUserForm").style.display = "none";
+        }
+
+        function showDeleteUserForm() {
+            document.getElementById("addUserForm").style.display = "none";
+            document.getElementById("deleteUserForm").style.display = "block";
+            document.getElementById("editUserForm").style.display = "none";
+        }
+
+        function showEditUserForm() {
+            document.getElementById("addUserForm").style.display = "none";
+            document.getElementById("deleteUserForm").style.display = "none";
+            document.getElementById("editUserForm").style.display = "block";
+            document.getElementById("editUserDetailsForm").style.display = "none";
+        }
+
+        $("#fetchUserForm").submit(function(event) {
+            event.preventDefault();
+            var userId = $("#editUserId").val();
+            $.get("/getUser", { userId: userId }, function(data) {
+                if (data.editUser) {
+                    $("#editUserIdHidden").val(data.editUser.id);
+                    $("#editName").val(data.editUser.name);
+                    $("#editEmail").val(data.editUser.email);
+                    $("#editRole").val(data.editUser.role);
+                    $("#editUserDetailsForm").show();
+                } else {
+                    alert(data.errorMessage);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

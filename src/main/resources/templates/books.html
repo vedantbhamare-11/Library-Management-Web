@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Books</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Book List</h1>
+    <form th:action="@{/books}" method="get">
+        <label for="bookId">Enter Book ID:</label>
+        <input type="text" id="bookId" name="bookId" />
+        <button type="submit">Find Book</button>
+    </form>
+    <button id="viewAllBtn" onclick="toggleBooks()">View All Books</button>
+    <button id="hideBooksBtn" style="display: none;" onclick="toggleBooks()">Hide All Books</button>
+    <button id="addBookBtn" onclick="showAddBookForm()">Add Book</button>
+    <button id="deleteBookBtn" onclick="showDeleteBookForm()">Delete Book</button>
+    <button id="editBookBtn" onclick="showEditBookForm()">Edit Book</button>
+
+    <div id="bookDetails" th:if="${book}">
+        <h2>Book Details</h2>
+        <p>Title: <span th:text="${book.title}"></span></p>
+        <p>Author: <span th:text="${book.author}"></span></p>
+        <p>Quantity: <span th:text="${book.quantity}"></span></p>
+    </div>
+
+    <div id="errorMessage" th:if="${errorMessage}">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <table id="bookTable" style="display: none;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Quantity</th>
+                <th>Subject ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="book : ${books}">
+                <td th:text="${book.id}">1</td>
+                <td th:text="${book.title}">Title</td>
+                <td th:text="${book.author}">Author</td>
+                <td th:text="${book.quantity}">0</td>
+                <td th:text="${book.subjectId}">0</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Add Book Form -->
+    <div id="addBookForm" style="display: none;">
+        <h2>Add New Book</h2>
+        <form th:action="@{/addBook}" method="post">
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" required /><br />
+            <label for="author">Author:</label>
+            <input type="text" id="author" name="author" required /><br />
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" name="quantity" required /><br />
+            <label for="subjectId">Subject ID:</label>
+            <input type="number" id="subjectId" name="subjectId" required /><br />
+            <button type="submit">Add Book</button>
+        </form>
+    </div>
+
+    <!-- Delete Book Form -->
+    <div id="deleteBookForm" style="display: none;">
+        <h2>Delete Book</h2>
+        <form th:action="@{/deleteBook}" method="post">
+            <label for="deleteBookId">Enter Book ID to delete:</label>
+            <input type="text" id="deleteBookId" name="bookId" required />
+            <button type="submit">Delete Book</button>
+        </form>
+    </div>
+
+    <!-- Edit Book Form -->
+    <div id="editBookForm" style="display: none;">
+        <h2>Edit Book</h2>
+        <form id="fetchBookForm" th:action="@{/getBook}" method="get">
+            <label for="editBookId">Enter Book ID to edit:</label>
+            <input type="text" id="editBookId" name="bookId" required />
+            <button type="submit">Find Book</button>
+        </form>
+        <div id="editBookDetails" style="display: none;">
+            <h2>Edit Book Details</h2>
+            <form th:action="@{/editBook}" method="post">
+                <input type="hidden" id="editBookIdField" name="id" />
+                <label for="editTitle">Title:</label>
+                <input type="text" id="editTitle" name="title" required /><br />
+                <label for="editAuthor">Author:</label>
+                <input type="text" id="editAuthor" name="author" required /><br />
+                <label for="editQuantity">Quantity:</label>
+                <input type="number" id="editQuantity" name="quantity" required /><br />
+                <label for="editSubjectId">Subject ID:</label>
+                <input type="number" id="editSubjectId" name="subjectId" required /><br />
+                <button type="submit">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleBooks() {
+            var bookTable = $('#bookTable');
+            var viewAllBtn = $('#viewAllBtn');
+            var hideBooksBtn = $('#hideBooksBtn');
+            
+            if (bookTable.is(':visible')) {
+                bookTable.hide();
+                viewAllBtn.show();
+                hideBooksBtn.hide();
+            } else {
+                $.ajax({
+                    url: '/viewAllBooks',
+                    method: 'GET',
+                    success: function(response) {
+                        bookTable.find('tbody').html($(response).find('#bookTable tbody').html());
+                        bookTable.show();
+                        viewAllBtn.hide();
+                        hideBooksBtn.show();
+                    },
+                    error: function() {
+                        alert('Failed to load books');
+                    }
+                });
+            }
+        }
+
+        function showAddBookForm() {
+            $('#addBookForm').toggle();
+        }
+
+        function showDeleteBookForm() {
+            $('#deleteBookForm').toggle();
+        }
+
+        function showEditBookForm() {
+            $('#editBookForm').toggle();
+            $('#editBookDetails').hide(); // Ensure details form is hidden initially
+        }
+
+        function populateEditBookForm(book) {
+            $('#editBookIdField').val(book.id);
+            $('#editTitle').val(book.title);
+            $('#editAuthor').val(book.author);
+            $('#editQuantity').val(book.quantity);
+            $('#editSubjectId').val(book.subjectId);
+            $('#editBookDetails').show();
+        }
+
+        $(document).ready(function() {
+            $('#fetchBookForm').submit(function(event) {
+                event.preventDefault();
+                var bookId = $('#editBookId').val();
+                $.ajax({
+                    url: '/getBook',
+                    method: 'GET',
+                    data: { bookId: bookId },
+                    success: function(response) {
+                        if (response.editBook) {
+                            populateEditBookForm(response.editBook);
+                        } else {
+                            alert(response.errorMessage || 'Book not found');
+                        }
+                    },
+                    error: function() {
+                        alert('Failed to fetch book details');
+                    }
+                });
+            });
+
+            $('#bookTable').hide();
+            $('#hideBooksBtn').hide();
+        });
+    </script>
+</body>
+</html>

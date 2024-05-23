@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Subjects</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Subject List</h1>
+    <form th:action="@{/subjects}" method="get">
+        <label for="subjectId">Enter Subject ID:</label>
+        <input type="text" id="subjectId" name="subjectId" />
+        <button type="submit">Find Subject</button>
+    </form>
+    <button id="viewAllSubjectsBtn" onclick="toggleSubjects()">View All Subjects</button>
+    <button id="hideSubjectsBtn" style="display: none;" onclick="toggleSubjects()">Hide All Subjects</button>
+    <button id="addSubjectBtn" onclick="showAddSubjectForm()">Add Subject</button>
+    <button id="deleteSubjectBtn" onclick="showDeleteSubjectForm()">Delete Subject</button>
+
+    <div id="subjectDetails" th:if="${subject}">
+        <h2>Subject Details</h2>
+        <p>Name: <span th:text="${subject.name}"></span></p>
+        <p>Description: <span th:text="${subject.description}"></span></p>
+    </div>
+
+    <div id="errorMessage" th:if="${errorMessage}">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <form id="addSubjectForm" style="display: none;" th:action="@{/addSubject}" method="post">
+        <label for="subjectName">Name:</label>
+        <input type="text" id="subjectName" name="name" />
+        <label for="subjectDescription">Description:</label>
+        <input type="text" id="subjectDescription" name="description" />
+        <button type="submit">Add</button>
+    </form>
+
+    <form id="deleteSubjectForm" style="display: none;" th:action="@{/deleteSubject}" method="post">
+        <label for="deleteSubjectId">Enter Subject ID to delete:</label>
+        <input type="text" id="deleteSubjectId" name="subjectId" />
+        <button type="submit">Delete</button>
+    </form>
+
+    <table id="subjectTable" style="display: none;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="subject : ${subjects}">
+                <td th:text="${subject.id}"><span th:text="${subject.id}"></span></td>
+                <td th:text="${subject.name}"><span th:text="${subject.name}"></span></td>
+                <td th:text="${subject.description}"><span th:text="${subject.description}"></span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script th:inline="javascript">
+        function toggleSubjects() {
+            $('#subjectTable').toggle();
+            $('#viewAllSubjectsBtn').toggle();
+            $('#hideSubjectsBtn').toggle();
+        }
+
+        function showAddSubjectForm() {
+            $('#addSubjectForm').toggle();
+            $('#subjectDetails').hide();
+            $('#deleteSubjectForm').hide();
+        }
+
+        function showDeleteSubjectForm() {
+            $('#deleteSubjectForm').toggle();
+            $('#subjectDetails').hide();
+            $('#addSubjectForm').hide();
+        }
+
+        $(document).ready(function() {
+            // Show/hide View All Subjects and Hide All Subjects buttons initially
+            if ($('#subjectTable tbody tr').length > 0) {
+                $('#viewAllSubjectsBtn').show();
+            } else {
+                $('#hideSubjectsBtn').hide();
+            }
+
+            // Show/hide Add Subject and Delete Subject buttons initially
+            $('#addSubjectBtn').show();
+            $('#deleteSubjectBtn').show();
+        });
+    </script>
+</body>
+</html>
