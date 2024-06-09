@@ -2,34 +2,39 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Books</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
-<body>
-    <h1>Book List</h1>
-    <form th:action="@{/books}" method="get">
-        <label for="bookId">Enter Book ID:</label>
-        <input type="text" id="bookId" name="bookId" />
-        <button type="submit">Find Book</button>
+<body class="container mt-5">
+    <h1 class="mb-4">Book List</h1>
+    <form th:action="@{/books}" method="get" class="form-inline mb-3">
+        <label for="bookId" class="mr-2">Enter Book ID:</label>
+        <input type="text" id="bookId" name="bookId" class="form-control mr-2" />
+        <button type="submit" class="btn btn-primary">Find Book</button>
     </form>
-    <button id="viewAllBtn" onclick="toggleBooks()">View All Books</button>
-    <button id="hideBooksBtn" style="display: none;" onclick="toggleBooks()">Hide All Books</button>
-    <button id="addBookBtn" onclick="showAddBookForm()">Add Book</button>
-    <button id="deleteBookBtn" onclick="showDeleteBookForm()">Delete Book</button>
-    <button id="editBookBtn" onclick="showEditBookForm()">Edit Book</button>
+    <div class="mb-3">
+        <button id="viewAllBtn" class="btn btn-info mr-2" onclick="toggleBooks()">View All Books</button>
+        <button id="hideBooksBtn" class="btn btn-warning mr-2" style="display: none;" onclick="toggleBooks()">Hide All Books</button>
+        <button id="addBookBtn" class="btn btn-success mr-2" onclick="showAddBookForm()">Add Book</button>
+        <button id="deleteBookBtn" class="btn btn-danger mr-2" onclick="showDeleteBookForm()">Delete Book</button>
+        <button id="editBookBtn" class="btn btn-secondary" onclick="showEditBookForm()">Edit Book</button>
+    </div>
 
-    <div id="bookDetails" th:if="${book}">
+    <div id="bookDetails" th:if="${book}" class="alert alert-info">
         <h2>Book Details</h2>
         <p>Title: <span th:text="${book.title}"></span></p>
         <p>Author: <span th:text="${book.author}"></span></p>
         <p>Quantity: <span th:text="${book.quantity}"></span></p>
     </div>
 
-    <div id="errorMessage" th:if="${errorMessage}">
+    <div id="errorMessage" th:if="${errorMessage}" class="alert alert-danger">
         <p th:text="${errorMessage}"></p>
     </div>
 
-    <table id="bookTable" style="display: none;">
-        <thead>
+    <table id="bookTable" class="table table-striped table-bordered" style="display: none;">
+        <thead class="thead-dark">
             <tr>
                 <th>ID</th>
                 <th>Title</th>
@@ -52,50 +57,50 @@
     <!-- Add Book Form -->
     <div id="addBookForm" style="display: none;">
         <h2>Add New Book</h2>
-        <form th:action="@{/addBook}" method="post">
+        <form th:action="@{/addBook}" method="post" class="form-group">
             <label for="title">Title:</label>
-            <input type="text" id="title" name="title" required /><br />
+            <input type="text" id="title" name="title" class="form-control mb-3" required />
             <label for="author">Author:</label>
-            <input type="text" id="author" name="author" required /><br />
+            <input type="text" id="author" name="author" class="form-control mb-3" required />
             <label for="quantity">Quantity:</label>
-            <input type="number" id="quantity" name="quantity" required /><br />
+            <input type="number" id="quantity" name="quantity" class="form-control mb-3" required />
             <label for="subjectId">Subject ID:</label>
-            <input type="number" id="subjectId" name="subjectId" required /><br />
-            <button type="submit">Add Book</button>
+            <input type="number" id="subjectId" name="subjectId" class="form-control mb-3" required />
+            <button type="submit" class="btn btn-success">Add Book</button>
         </form>
     </div>
 
     <!-- Delete Book Form -->
     <div id="deleteBookForm" style="display: none;">
         <h2>Delete Book</h2>
-        <form th:action="@{/deleteBook}" method="post">
-            <label for="deleteBookId">Enter Book ID to delete:</label>
-            <input type="text" id="deleteBookId" name="bookId" required />
-            <button type="submit">Delete Book</button>
+        <form th:action="@{/deleteBook}" method="post" class="form-inline">
+            <label for="deleteBookId" class="mr-2">Enter Book ID to delete:</label>
+            <input type="text" id="deleteBookId" name="bookId" class="form-control mr-2" required />
+            <button type="submit" class="btn btn-danger">Delete Book</button>
         </form>
     </div>
 
     <!-- Edit Book Form -->
     <div id="editBookForm" style="display: none;">
         <h2>Edit Book</h2>
-        <form id="fetchBookForm" th:action="@{/getBook}" method="get">
-            <label for="editBookId">Enter Book ID to edit:</label>
-            <input type="text" id="editBookId" name="bookId" required />
-            <button type="submit">Find Book</button>
+        <form id="fetchBookForm" th:action="@{/getBook}" method="get" class="form-inline mb-3">
+            <label for="editBookId" class="mr-2">Enter Book ID to edit:</label>
+            <input type="text" id="editBookId" name="bookId" class="form-control mr-2" required />
+            <button type="submit" class="btn btn-secondary">Find Book</button>
         </form>
         <div id="editBookDetails" style="display: none;">
             <h2>Edit Book Details</h2>
-            <form th:action="@{/editBook}" method="post">
+            <form th:action="@{/editBook}" method="post" class="form-group">
                 <input type="hidden" id="editBookIdField" name="id" />
                 <label for="editTitle">Title:</label>
-                <input type="text" id="editTitle" name="title" required /><br />
+                <input type="text" id="editTitle" name="title" class="form-control mb-3" required />
                 <label for="editAuthor">Author:</label>
-                <input type="text" id="editAuthor" name="author" required /><br />
+                <input type="text" id="editAuthor" name="author" class="form-control mb-3" required />
                 <label for="editQuantity">Quantity:</label>
-                <input type="number" id="editQuantity" name="quantity" required /><br />
+                <input type="number" id="editQuantity" name="quantity" class="form-control mb-3" required />
                 <label for="editSubjectId">Subject ID:</label>
-                <input type="number" id="editSubjectId" name="subjectId" required /><br />
-                <button type="submit">Save Changes</button>
+                <input type="number" id="editSubjectId" name="subjectId" class="form-control mb-3" required />
+                <button type="submit" class="btn btn-primary">Save Changes</button>
             </form>
         </div>
     </div>
