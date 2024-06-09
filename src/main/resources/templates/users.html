@@ -1,95 +1,119 @@
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Users</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<body>
-    <h1>User List</h1>
-    <form th:action="@{/users}" method="get">
-        <label for="userId">Enter User ID:</label>
-        <input type="text" id="userId" name="userId" />
-        <button type="submit">Find User</button>
+<body class="container mt-5">
+    <h1 class="mb-4">User List</h1>
+    <form th:action="@{/users}" method="get" class="mb-3">
+        <div class="form-group">
+            <label for="userId">Enter User ID:</label>
+            <input type="text" id="userId" name="userId" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">Find User</button>
     </form>
-    <button id="viewAllUsersBtn" onclick="toggleUsers()">View All Users</button>
-    <button id="hideUsersBtn" style="display: none;" onclick="toggleUsers()">Hide All Users</button>
-    <button id="addUserBtn" onclick="showAddUserForm()">Add User</button>
-    <button id="deleteUserBtn" onclick="showDeleteUserForm()">Delete User</button>
-    <button id="editUserBtn" onclick="showEditUserForm()">Edit User</button>
-
-    <div id="userDetails" th:if="${user}">
-        <h2>User Details</h2>
-        <p>Name: <span th:text="${user.name}"></span></p>
-        <p>Email: <span th:text="${user.email}"></span></p>
-        <p>Role: <span th:text="${user.role}"></span></p>
+    <button id="viewAllUsersBtn" onclick="toggleUsers()" class="btn btn-info mr-2">View All Users</button>
+    <button id="hideUsersBtn" style="display: none;" onclick="toggleUsers()" class="btn btn-secondary mr-2">Hide All Users</button>
+    <button id="addUserBtn" onclick="showAddUserForm()" class="btn btn-success mr-2">Add User</button>
+    <button id="deleteUserBtn" onclick="showDeleteUserForm()" class="btn btn-danger mr-2">Delete User</button>
+    <button id="editUserBtn" onclick="showEditUserForm()" class="btn btn-warning">Edit User</button>
+<div id="userDetails" th:if="${user}" class="mt-4">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title">User Details</h2>
+            <p class="card-text">Name: <span th:text="${user.name}"></span></p>
+            <p class="card-text">Email: <span th:text="${user.email}"></span></p>
+            <p class="card-text">Role: <span th:text="${user.role}"></span></p>
+        </div>
     </div>
+</div>
 
-    <div id="errorMessage" th:if="${errorMessage}">
-        <p th:text="${errorMessage}"></p>
-    </div>
+<div id="errorMessage" th:if="${errorMessage}" class="alert alert-danger mt-4">
+    <p th:text="${errorMessage}"></p>
+</div>
 
-    <table id="userTable" style="display: none;">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="user : ${users}">
-                <td th:text="${user.id}">1</td>
-                <td th:text="${user.name}">Name</td>
-                <td th:text="${user.email}">Email</td>
-                <td th:text="${user.role}">Role</td>
-            </tr>
-        </tbody>
-    </table>
+<table id="userTable" class="table table-bordered table-striped mt-4">
+    <thead class="thead-dark">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.id}">1</td>
+            <td th:text="${user.name}">Name</td>
+            <td th:text="${user.email}">Email</td>
+            <td th:text="${user.role}">Role</td>
+        </tr>
+    </tbody>
+</table>
 
-    <!-- Add User Form -->
-    <div id="addUserForm" style="display: none;">
-        <h2>Add New User</h2>
-        <form th:action="@{/addUser}" method="post">
+<!-- Add User Form -->
+<div id="addUserForm" style="display: none;">
+    <h2 class="mt-4 mb-3">Add New User</h2>
+    <form th:action="@{/addUser}" method="post" class="needs-validation" novalidate>
+        <div class="form-group">
             <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required /><br />
+            <input type="text" id="name" name="name" class="form-control" required />
+        </div>
+        <div class="form-group">
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required /><br />
+            <input type="email" id="email" name="email" class="form-control" required />
+        </div>
+        <div class="form-group">
             <label for="role">Role:</label>
-            <input type="text" id="role" name="role" required /><br />
-            <button type="submit">Add User</button>
-        </form>
-    </div>
+            <input type="text" id="role" name="role" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Add User</button>
+    </form>
+</div>
 
-    <!-- Delete User Form -->
-    <div id="deleteUserForm" style="display: none;">
-        <h2>Delete User</h2>
-        <form th:action="@{/deleteUser}" method="post">
+<!-- Delete User Form -->
+<div id="deleteUserForm" style="display: none;">
+    <h2 class="mt-4 mb-3">Delete User</h2>
+    <form th:action="@{/deleteUser}" method="post" class="needs-validation" novalidate>
+        <div class="form-group">
             <label for="deleteUserId">Enter User ID to delete:</label>
-            <input type="text" id="deleteUserId" name="userId" required />
-            <button type="submit">Delete User</button>
-        </form>
-    </div>
+            <input type="text" id="deleteUserId" name="userId" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-danger">Delete User</button>
+    </form>
+</div>
 
-    <!-- Edit User Form -->
-    <div id="editUserForm" style="display: none;">
-        <h2>Edit User</h2>
-        <form id="fetchUserForm" th:action="@{/getUser}" method="get">
+<!-- Edit User Form -->
+<div id="editUserForm" style="display: none;">
+    <h2 class="mt-4 mb-3">Edit User</h2>
+    <form id="fetchUserForm" th:action="@{/getUser}" method="get" class="needs-validation" novalidate>
+        <div class="form-group">
             <label for="editUserId">Enter User ID to edit:</label>
-            <input type="text" id="editUserId" name="userId" required />
-            <button type="submit">Fetch User</button>
-        </form>
-        <form id="editUserDetailsForm" th:action="@{/editUser}" method="post" style="display: none;">
-            <input type="hidden" id="editUserIdHidden" name="id" />
+            <input type="text" id="editUserId" name="userId" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Fetch User</button>
+    </form>
+    <form id="editUserDetailsForm" th:action="@{/editUser}" method="post" style="display: none;">
+        <input type="hidden" id="editUserIdHidden" name="id" />
+        <div class="form-group">
             <label for="editName">Name:</label>
-            <input type="text" id="editName" name="name" required /><br />
+            <input type="text" id="editName" name="name" class="form-control" required />
+        </div>
+        <div class="form-group">
             <label for="editEmail">Email:</label>
-            <input type="email" id="editEmail" name="email" required /><br />
+            <input type="email" id="editEmail" name="email" class="form-control" required />
+        </div>
+        <div class="form-group">
             <label for="editRole">Role:</label>
-            <input type="text" id="editRole" name="role" required /><br />
-            <button type="submit">Save Changes</button>
-        </form>
-    </div>
+            <input type="text" id="editRole" name="role" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-success">Save Changes</button>
+    </form>
+</div>
+
 
     <script>
         function toggleUsers() {
