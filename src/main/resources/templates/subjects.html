@@ -3,59 +3,74 @@
 <head>
     <title>Subjects</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <h1>Subject List</h1>
-    <form th:action="@{/subjects}" method="get">
-        <label for="subjectId">Enter Subject ID:</label>
-        <input type="text" id="subjectId" name="subjectId" />
-        <button type="submit">Find Subject</button>
-    </form>
-    <button id="viewAllSubjectsBtn" onclick="toggleSubjects()">View All Subjects</button>
-    <button id="hideSubjectsBtn" style="display: none;" onclick="toggleSubjects()">Hide All Subjects</button>
-    <button id="addSubjectBtn" onclick="showAddSubjectForm()">Add Subject</button>
-    <button id="deleteSubjectBtn" onclick="showDeleteSubjectForm()">Delete Subject</button>
+    <div class="container">
+        <h1>Subject List</h1>
+        <form th:action="@{/subjects}" method="get" class="form-inline mb-3">
+            <label for="subjectId" class="mr-2">Enter Subject ID:</label>
+            <input type="text" id="subjectId" name="subjectId" class="form-control mr-2" />
+            <button type="submit" class="btn btn-primary">Find Subject</button>
+        </form>
+        <button id="viewAllSubjectsBtn" onclick="toggleSubjects()" class="btn btn-secondary mr-2">View All Subjects</button>
+        <button id="hideSubjectsBtn" style="display: none;" onclick="toggleSubjects()" class="btn btn-secondary">Hide All Subjects</button>
+        <button id="addSubjectBtn" onclick="showAddSubjectForm()" class="btn btn-success mr-2">Add Subject</button>
+        <button id="deleteSubjectBtn" onclick="showDeleteSubjectForm()" class="btn btn-danger">Delete Subject</button>
 
-    <div id="subjectDetails" th:if="${subject}">
-        <h2>Subject Details</h2>
-        <p>Name: <span th:text="${subject.name}"></span></p>
-        <p>Description: <span th:text="${subject.description}"></span></p>
+        <div id="subjectDetails" th:if="${subject}" class="mt-4">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">Subject Details</h2>
+                    <p class="card-text">Name: <span th:text="${subject.name}"></span></p>
+                    <p class="card-text">Description: <span th:text="${subject.description}"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="errorMessage" th:if="${errorMessage}" class="alert alert-danger mt-4">
+            <p th:text="${errorMessage}"></p>
+        </div>
+
+        <form id="addSubjectForm" style="display: none;" th:action="@{/addSubject}" method="post">
+            <h2 class="mt-4 mb-3">Add New Subject</h2>
+            <div class="form-group">
+                <label for="subjectName">Name:</label>
+                <input type="text" id="subjectName" name="name" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="subjectDescription">Description:</label>
+                <input type="text" id="subjectDescription" name="description" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+
+        <form id="deleteSubjectForm" style="display: none;" th:action="@{/deleteSubject}" method="post">
+            <h2 class="mt-4 mb-3">Delete Subject</h2>
+            <div class="form-group">
+                <label for="deleteSubjectId">Enter Subject ID to delete:</label>
+                <input type="text" id="deleteSubjectId" name="subjectId" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+
+        <table id="subjectTable" style="display: none;" class="table table-bordered table-striped mt-4">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="subject : ${subjects}">
+                    <td th:text="${subject.id}"><span th:text="${subject.id}"></span></td>
+                    <td th:text="${subject.name}"><span th:text="${subject.name}"></span></td>
+                    <td th:text="${subject.description}"><span th:text="${subject.description}"></span></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-
-    <div id="errorMessage" th:if="${errorMessage}">
-        <p th:text="${errorMessage}"></p>
-    </div>
-
-    <form id="addSubjectForm" style="display: none;" th:action="@{/addSubject}" method="post">
-        <label for="subjectName">Name:</label>
-        <input type="text" id="subjectName" name="name" />
-        <label for="subjectDescription">Description:</label>
-        <input type="text" id="subjectDescription" name="description" />
-        <button type="submit">Add</button>
-    </form>
-
-    <form id="deleteSubjectForm" style="display: none;" th:action="@{/deleteSubject}" method="post">
-        <label for="deleteSubjectId">Enter Subject ID to delete:</label>
-        <input type="text" id="deleteSubjectId" name="subjectId" />
-        <button type="submit">Delete</button>
-    </form>
-
-    <table id="subjectTable" style="display: none;">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="subject : ${subjects}">
-                <td th:text="${subject.id}"><span th:text="${subject.id}"></span></td>
-                <td th:text="${subject.name}"><span th:text="${subject.name}"></span></td>
-                <td th:text="${subject.description}"><span th:text="${subject.description}"></span></td>
-            </tr>
-        </tbody>
-    </table>
 
     <script th:inline="javascript">
         function toggleSubjects() {
@@ -77,7 +92,7 @@
         }
 
         $(document).ready(function() {
-            // Show/hide View All Subjects and Hide All Subjects buttons initially
+            // Show/hide View All Subjects and Hide All Subjects and Hide All Subjects buttons initially
             if ($('#subjectTable tbody tr').length > 0) {
                 $('#viewAllSubjectsBtn').show();
             } else {
@@ -91,3 +106,4 @@
     </script>
 </body>
 </html>
+            
